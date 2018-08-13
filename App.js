@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { createStackNavigator } from 'react-navigation';
-import Login from './src/screens/Login';
-import Tabs from './src/screens/Tabs';
-import Register from './src/screens/Register';
+import Navigation from './Navigation';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import rootReducer from './rootReducer';
 
-const Navigation = createStackNavigator({
-  Login: {screen:Login,},
-  Register: {screen:Register,},
-  Tabs: {screen:Tabs,}
-})
-export default Navigation;
+export var store = createStore(rootReducer);
+
+export default App => (
+  <Provider store={store}>
+    <Navigation />
+  </Provider>
+);

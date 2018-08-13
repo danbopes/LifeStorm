@@ -2,14 +2,8 @@ import React, { Component } from 'react';
 import { Text, View, AsyncStorage } from 'react-native';
 import { navigation } from 'react-navigation';
 import { Header } from "react-native-elements";
-import { connect, Provider } from "react-redux";
-import ReactDOM   from 'react-dom';
+import { connect } from "react-redux";
 
-function mapStateToProps (state) {
-  return {
-    user: state.user
-  }
-}
 export class Profil extends React.Component {
 
   render() {
@@ -22,6 +16,12 @@ export class Profil extends React.Component {
         <Text>Willkommen { this.props.user } </Text>
       </View>
      )
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    user: state.user
   }
 }
 

@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, TextInput, View, Button, TouchableOpacity, Alert } from "react-native";
-import { navigation } from 'react-navigation';
-import { createStore } from 'redux';
-import { Provider } from "react-redux";
-import ReactDOM   from 'react-dom';
-import { Profil } from '../screens/Profile';
+import { connect } from "react-redux";
 
 const styles = StyleSheet.create({
   container: {
@@ -64,78 +60,73 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class Login extends Component {
+class Login extends Component {
 
   constructor(props) {
 
     super(props)
 
     this.state = {
-
       UserEmail: '',
       UserName: '',
       UserPassword: ''
-
     }
 
   }
 
-  UserLoginFunction = () =>{
+  UserLoginFunction = () => {
 
    const { UserEmail }  = this.state ;
    const { UserName }  = this.state ;
    const { UserPassword }  = this.state ;
 
 
-  fetch('https://lifestormweb.000webhostapp.com/User_Login.php', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+    fetch('https://lifestormweb.000webhostapp.com/User_Login.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
 
-      email: UserEmail,
+        email: UserEmail,
 
-      password: UserPassword,
+        password: UserPassword,
 
-      name: UserName
+        name: UserName
 
-    })
+      })
 
-  }).then((response) => response.json())
-        .then((responseJson) => {
+    }).then((response) => response.json())
+          .then((responseJson) => {
 
-          // If server response message same as Data Matched
-         if(responseJson === 'Data Matched')
-          {
+            // If server response message same as Data Matched
+          if(responseJson === 'Data Matched')
+            {
 
-              //Then open Profile activity and send user email to profile activity.
-              this.props.navigation.navigate("Tabs");
-              store.dispatch({
-                type: 'ADD_USER',
-                user: { Name: UserName }
-              });
+                //Then open Profile activity and send user email to profile activity.
+                this.props.navigation.navigate("Tabs");
+                
+                this.props.addUser({ Name: UserName });
+            }
+            else{
 
-          }
-          else{
+              Alert.alert(responseJson);
+            }
 
-            Alert.alert(responseJson);
-          }
+          }).catch((error) => {
+            console.error(error);
+          });
 
-        }).catch((error) => {
-          console.error(error);
-        });
-
-    }
+      }
 
   render() {
     return (
       <View style={styles.container}>
-       <View style={styles.loginTextCont}>
-        <Text style={{fontSize: 36, fontFamily: "Futura" }}>
-          Willkommen zu</Text> <Text style={{fontSize: 36, fontFamily: "Futura", color:'#ff0000' }}>LifeStorm!</Text>
-        <View style={{width: 10, height: 5 }} />
+        <View style={styles.loginTextCont}>
+          <Text style={{fontSize: 36, fontFamily: "Futura" }}>
+            Willkommen zu</Text> <Text style={{fontSize: 36, fontFamily: "Futura", color:'#ff0000' }}>LifeStorm!</Text>
+          <View style={{width: 10, height: 5 }} />
         </View>
         <TextInput style={styles.inputBox}
             onChangeText={UserName => this.setState({UserName})}
@@ -180,21 +171,16 @@ export default class Login extends Component {
   }
 }
 
-var userReducer = function(state, action) {
-  if (state === undefined) {
-    state = [];
+const mapStateToProps = state => {
+  return {
+    user: state.user
   }
-  if (action.type === 'ADD_USER') {
-    state.push(action.user);
-  }
-  return state;
 }
 
-export var store = createStore(userReducer);
+const mapDispatchToProps = dispatch => {
+  return {
+    addUser: (user) => dispatch({type: 'ADD_USER', user})
+  };
+}
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Profil />
-  </Provider>,
-  document.getElementById('root')
-)
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
